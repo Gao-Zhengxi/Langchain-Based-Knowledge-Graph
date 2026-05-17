@@ -29,10 +29,12 @@ def main() -> None:
     config = AppConfig()
     llm_config = config.get_llm_config(args.model)
     llm = LLMFactory(llm_config).build()
-
+    print("LLM 模型已加载：", args.model)
+    print(f"加载文档中，路径：{args.source}，chunk_size={args.chunk_size}，chunk_overlap={args.chunk_overlap}")
     reader = TextSourceReader(chunk_size=args.chunk_size, chunk_overlap=args.chunk_overlap)
     chunks = reader.load_and_chunk(Path(args.source))
 
+    print(f"文档已加载并分块，得到 {len(chunks)} 个文本块。开始提取三元组...")
     extractor = KGExtractor(llm=llm, prompt_template=config.prompt_template)
     extraction_results = extractor.extract(chunks)
 
